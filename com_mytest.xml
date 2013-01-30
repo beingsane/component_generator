@@ -1,0 +1,75 @@
+<?xml?>
+<component>
+  <name>mytest</name>
+  
+  <front>
+    <!-- Task ---------------------------- -->
+    <task>
+      <name>viewOrders</name>
+      <permission>public</permission>
+      <params>
+        <param name="start" default="0"></param>
+        <param name="page" default="20"></param>
+      </params>
+      <view>/views/mytemplate.html.php</view>
+    </task>
+
+    <!-- Task ---------------------------- -->
+    <task>
+      <name>viewBacklog</name>
+      <permission>private</permission>
+
+      <doc>View the list of backlog projects</doc>
+
+      <html>
+
+<h1>View Backlog</h1>
+<p>This is where a user can view the backlog from the front-end</p>
+
+      </html>
+    </task>
+  </front>
+
+  <admin>
+    <!-- Task ---------------------------- -->
+    <task>
+      <name>listOrders</name>
+      <showInMenuAs>Orders</showInMenuAs>
+      <doc>Allows the user to review orders</doc>
+      <view>/views/mytemplate.html.php</view>
+    </task>
+
+    <!-- Task ---------------------------- -->
+    <task>
+      <name>viewOrder</name>
+      <doc>View an order</doc>
+      <params>
+        <param name="order_id" default="-1"></param>
+      </params>
+    </task>
+
+    <!-- Task ---------------------------- -->
+    <task>
+      <name>editOrder</name>
+      <doc>Edit an order</doc>
+      <params>
+        <param name="order_id" default="-1"></param>
+      </params>
+    </task>
+
+    <!-- Task ---------------------------- -->
+    <task>
+      <name>saveOrder</name>
+      <doc>This is a processing page for handling the saving of an order</doc>
+      <params>
+        <param name="order_id" source="get"></param>
+        <param name="order_name" source="get"></param>
+        <param name="order_cost" source="get" default="0"></param>
+        <param name="order_inventory" source="get"></param>
+        <param name="order_for_sale" source="get"></param>
+      </params>
+    </task>
+
+  </admin>
+
+</component>

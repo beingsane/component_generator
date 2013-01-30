@@ -1,0 +1,283 @@
+.#----------------------------------------------------
+.BASE_PATH = "build/com_$(component->name)"
+.COMPONENT_NAME = "com_$(component->name)"
+
+.echo "making directory $(BASE_PATH:)"
+.directory.create( BASE_PATH )
+.
+.echo "making directory $(BASE_PATH:)/admin"
+.directory.create( "$(BASE_PATH:)/admin" )
+
+.#----------------------------------------------------
+.echo "generating $(BASE_PATH:)/index.html"
+.output "$(BASE_PATH)/index.html" 
+<html><body bgcolor="#FFFFFF"></body></html>
+
+.#----------------------------------------------------
+.echo "generating $(BASE_PATH:)/$(component->name).php" 
+.output "$(BASE_PATH)/$(component->name).php" 
+<?php
+
+// no direct access
+defined('_JEXEC') or die('Restricted access');
+
+// ini_set('display_errors', 1);
+
+require_once( JApplicationHelper::getPath( 'front_html' ) );
+require_once("administrator/components/$(COMPONENT_NAME:)/includes/functions.php");
+
+.for front
+// route incoming request to a function
+switch ( $_GET['task'] )
+{
+.   for task
+    case '$(task->name:)': $(task->name:)(); break;
+.   endfor
+    default: 
+        JError:raiseError(404, JText::_('JGLOBAL_RESOURCE_NOT_FOUND'));
+}
+
+.for task
+/**
+ * $(task->doc?"(no documentation)":)
+ */
+function $(task->name:)() 
+{
+    global $option, $mainframe;
+
+    $database =& JFactory::getDBO();
+    $session  =& JFactory::getSession();
+    $user     =& JFactory::getUser();
+  
+.   if ("private" = "$(task->permission)" )
+    // this function is only available to logged in users
+    if(!$user->id) {
+      echo "You must be logged in.";
+      exit(); 
+    }
+
+.   endif
+.
+.   # set some defaults so this code works
+.   for params
+.       for param 
+    $$(name:) = JRequest::getVar('$(name:)', "$(default?'':)", "$(source?'get':)");
+.       endfor
+.   endfor
+
+.   # attempt to load a view
+.   if ("$(task->view?'':)" <> '' )
+.     # ... yes, load it
+    include(JPATH_COMPONENT."$(task->view:)");
+.   else
+.     # ... no, call helper function
+.     # setup parameters
+.     param_str = " "
+.     for params
+.         for param 
+.             param_str = "$(param_str)$$(name:), "
+.         endfor
+.         param_str = string.substr( param_str, 0, string.length(param_str) -3 )
+.         param_str = "$(param_str) "
+.     endfor
+.
+    HTML_$(component->name:)::$(task->name:)($(param_str));
+.   endif
+}
+
+.endfor # task
+.endfor # front
+
+.#----------------------------------------------------
+.echo "generating $(BASE_PATH:)/$(component->name).html.php" 
+.output "$(BASE_PATH)/$(component->name).html.php" 
+<?php
+
+// no direct access
+defined('_JEXEC') or die('Restricted access');
+
+class HTML_$(component->name:) {
+
+.for front
+.for task
+.   # only show this task if we don't have a view
+.   if ("$(task->view?'':)" = '' )
+.       # setup parameters
+.       param_str = " "
+.       for params
+.           for param 
+.               param_str = "$(param_str)$$(name:)=\"$(default:)\", "
+.           endfor
+.           param_str = string.substr( param_str, 0, string.length(param_str) -3 )
+.           param_str = "$(param_str) "
+.       endfor
+.
+    /**
+     * $(task->doc?"(no documentation)":)
+     */
+    public function $(task->name:)($(param_str))
+    {
+        global $mainframe;
+        $database =& JFactory::getDBO();
+
+.       for html
+?>
+        $(html.string())
+<?php
+.       endfor
+    }
+
+.    endif  # view = empty
+.endfor # task
+.endfor # front
+}
+
+.#----------------------------------------------------
+.echo "generating $(BASE_PATH:)/$(component->name).xml" 
+.output "$(BASE_PATH)/$(component->name).xml" 
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE install SYSTEM "http://dev.joomla.org/xml/1.5/component-install.dtd">
+<install type="component" version="1.5.0">
+  <name>$(component->Name)</name>
+  
+  <!-- Site Main File Copy Section -->
+  <files>
+    <filename>index.html</filename>
+    <filename>$(component->name:).php</filename>
+    <filename>$(component->name:).html.php</filename>
+  </files>
+   
+  <administration>
+    <menu>$(component->Name)</menu>
+    <submenu>
+.for task
+.  if ("$(task->showInMenuAs?"":)" <> "" )
+      <menu link="option=com_$(component->name:)&task=$(task->name:)">$(task->showInMenuAs)</menu>
+.  endif
+.endfor
+    </submenu>
+        
+    <files folder="admin">
+      <filename>admin.$(component->name:).php</filename>
+      <filename>admin.$(component->name:).html.php</filename> 
+    </files>      
+  </administration>
+</install>
+
+.#----------------------------------------------------
+.echo "generating $(BASE_PATH:)/admin/admin.$(component->name:).php"
+.output "$(BASE_PATH:)/admin/admin.$(component->name:).php"
+<?php
+
+// no direct access
+defined( '_JEXEC' ) or die( 'Restricted access' );
+ini_set("display_errors", 1);
+
+// Load the html class
+// This will include the admin.$(component->name:).html.php file, 
+// so now we can use anything that it provides!
+// $session =& JFactory::getSession();
+// 
+require_once( JApplicationHelper::getPath( 'admin_html' ) ); 
+require_once("components/com_$(component->name:)/includes/functions.php");
+
+.for admin
+// route incoming request to a function
+switch ($task) {
+.   for task
+    case '$(task->name:)': $(task->name:)(); break;
+.   endfor
+    default: 
+        JError:raiseError(404, JText::_('JGLOBAL_RESOURCE_NOT_FOUND'));
+}
+
+.for task
+/**
+ * $(task->doc?"(no documentation)":)
+ */
+function $(task->name:)() 
+{
+    global $option, $mainframe;
+
+    $database =& JFactory::getDBO();
+    $session  =& JFactory::getSession();
+
+    // TODO: add logic ...
+
+.   # set some defaults so this code works
+.   for params
+.       for param 
+    $$(name:) = JRequest::getVar('$(name:)', "$(default?'':)", "$(source?'get':)");
+.       endfor
+.   endfor
+
+.   # attempt to load a view
+.   if ("$(task->view?'':)" <> '' )
+.     # ... yes, load it
+    include(JPATH_COMPONENT_ADMINISTRATOR."$(task->view:)");
+.   else
+.     # ... no, call helper function
+.     # setup parameters
+.     param_str = " "
+.     for params
+.         for param 
+.             param_str = "$(param_str)$$(name:), "
+.         endfor
+.         param_str = string.substr( param_str, 0, string.length(param_str) -3 )
+.         param_str = "$(param_str) "
+.     endfor
+.
+    HTML_$(component->name:camel)Admin::$(task->name:)($(param_str));
+.   endif
+}
+
+.endfor # task
+.endfor # admin
+
+
+
+.#----------------------------------------------------
+.echo "generating $(BASE_PATH:)/admin/admin.$(component->name:).html.php"
+.output "$(BASE_PATH:)/admin/admin.$(component->name:).html.php"
+<?php
+
+// no direct access
+defined('_JEXEC') or die('Restricted access');
+
+class HTML_$(component->name:camel)Admin {
+
+.for admin
+.for task
+.   # only show this task if we don't have a view
+.   if ("$(task->view?'':)" = '' )
+.       # setup parameters
+.       param_str = " "
+.       for params
+.           for param 
+.               param_str = "$(param_str)$$(name:)=\"$(default?'':)\", "
+.           endfor
+.           param_str = string.substr( param_str, 0, string.length(param_str) -3 )
+.           param_str = "$(param_str) "
+.       endfor
+
+    /**
+     * $(task->doc?"(no documentation)":)
+     */
+    function $(task->name:)($(param_str))
+    {
+        global $mainframe;    
+        $database =& JFactory::getDBO();
+
+.       for html
+?>
+        $(html.string())
+<?php
+.       endfor
+    }
+
+.    endif  # view = empty
+.endfor # task
+.endfor # admin
+
+}
+
