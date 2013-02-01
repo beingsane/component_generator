@@ -3,70 +3,65 @@
   <name>mytest</name>
   
   <front>
+
     <!-- Task ---------------------------- -->
-    <task>
-      <name>viewOrders</name>
-      <permission>public</permission>
+    <task name="viewProduct">
+      <doc>Show a single product, probably with lots of detail.</doc>
       <params>
-        <param name="start" default="0"></param>
-        <param name="page" default="20"></param>
+        <param name="product_id" default="-1"></param>
       </params>
-      <view>/views/mytemplate.html.php</view>
+      <view ref="/views/viewProduct.html.php"></view>
     </task>
 
     <!-- Task ---------------------------- -->
-    <task>
-      <name>viewBacklog</name>
-      <permission>private</permission>
-
-      <doc>View the list of backlog projects</doc>
-
-      <html>
-
-<h1>View Backlog</h1>
-<p>This is where a user can view the backlog from the front-end</p>
-
-      </html>
+    <task name="listProducts">
+      <doc>List a number of products on a single page.</doc>
+      <params>
+        <param name="page" default="1"></param>
+      </params>
+      <view ref="/views/listProducts.html.php"></view>
     </task>
   </front>
 
   <admin>
+
     <!-- Task ---------------------------- -->
-    <task>
-      <name>listOrders</name>
-      <showInMenuAs>Orders</showInMenuAs>
-      <doc>Allows the user to review orders</doc>
-      <view>/views/mytemplate.html.php</view>
+    <task name="listProducts">
+      <doc>List a number of products on a single page.</doc>
+      <showInMenuAs>Products</showInMenuAs>
+      <view ref="/views/mytemplate.html.php"></view>
     </task>
 
     <!-- Task ---------------------------- -->
-    <task>
-      <name>viewOrder</name>
-      <doc>View an order</doc>
+    <task name="editProduct">
+      <doc>Show a single product, with the ability to edit.</doc>
       <params>
-        <param name="order_id" default="-1"></param>
+        <param name="product_id" default="-1"></param>
+      </params>
+      <view ref="/views/editProduct.html.php"></view>
+    </task>
+
+    <!-- Task ---------------------------- -->
+    <task name="saveProduct">
+      <doc>This is called when trying to save/update a product.</doc>
+      <params>
+        <param name="token" source="post"></param>
+        <param name="id" source="post" default="-1">
+          <doc>A value of -1 means that this should be a new product</doc>
+        </param>
+        <param name="name" source="post"></param>
+        <param name="cost" source="post" default="0"></param>
+        <param name="inventory" source="post"></param>
+        <param name="for_sale" source="post"></param>
       </params>
     </task>
 
     <!-- Task ---------------------------- -->
-    <task>
-      <name>editOrder</name>
-      <doc>Edit an order</doc>
+    <task name="deleteProduct">
+      <doc>Called when a user wants to delete a product</doc>
       <params>
-        <param name="order_id" default="-1"></param>
-      </params>
-    </task>
-
-    <!-- Task ---------------------------- -->
-    <task>
-      <name>saveOrder</name>
-      <doc>This is a processing page for handling the saving of an order</doc>
-      <params>
-        <param name="order_id" source="get"></param>
-        <param name="order_name" source="get"></param>
-        <param name="order_cost" source="get" default="0"></param>
-        <param name="order_inventory" source="get"></param>
-        <param name="order_for_sale" source="get"></param>
+        <param name="token" source="post"></param>
+        <param name="id" source="post"></param>
       </params>
     </task>
 

@@ -31,7 +31,7 @@ require_once("administrator/components/$(COMPONENT_NAME:)/includes/functions.php
 switch ( $_GET['task'] )
 {
 .   for task
-    case '$(task->name:)': $(task->name:)(); break;
+    case '$(task.name:)': $(task.name:)(); break;
 .   endfor
     default: 
         JError:raiseError(404, JText::_('JGLOBAL_RESOURCE_NOT_FOUND'));
@@ -41,7 +41,7 @@ switch ( $_GET['task'] )
 /**
  * $(task->doc?"(no documentation)":)
  */
-function $(task->name:)() 
+function $(task.name:)() 
 {
     global $option, $mainframe;
 
@@ -49,7 +49,7 @@ function $(task->name:)()
     $session  =& JFactory::getSession();
     $user     =& JFactory::getUser();
   
-.   if ("private" = "$(task->permission)" )
+.   if ("private" = "$(task->permission?'':)" )
     // this function is only available to logged in users
     if(!$user->id) {
       echo "You must be logged in.";
@@ -66,9 +66,9 @@ function $(task->name:)()
 .   endfor
 
 .   # attempt to load a view
-.   if ("$(task->view?'':)" <> '' )
+.   if ("$(task->view.ref?'':)" <> '' )
 .     # ... yes, load it
-    include(JPATH_COMPONENT."$(task->view:)");
+    include(JPATH_COMPONENT."$(task->view.ref:)");
 .   else
 .     # ... no, call helper function
 .     # setup parameters
@@ -81,7 +81,7 @@ function $(task->name:)()
 .         param_str = "$(param_str) "
 .     endfor
 .
-    HTML_$(component->name:)::$(task->name:)($(param_str));
+    HTML_$(component->name:)::$(task.name:)($(param_str));
 .   endif
 }
 
@@ -101,7 +101,7 @@ class HTML_$(component->name:) {
 .for front
 .for task
 .   # only show this task if we don't have a view
-.   if ("$(task->view?'':)" = '' )
+.   if ("$(task->view.ref?'':)" = '' )
 .       # setup parameters
 .       param_str = " "
 .       for params
@@ -115,7 +115,7 @@ class HTML_$(component->name:) {
     /**
      * $(task->doc?"(no documentation)":)
      */
-    public function $(task->name:)($(param_str))
+    public function $(task.name:)($(param_str))
     {
         global $mainframe;
         $database =& JFactory::getDBO();
@@ -152,7 +152,7 @@ class HTML_$(component->name:) {
     <submenu>
 .for task
 .  if ("$(task->showInMenuAs?"":)" <> "" )
-      <menu link="option=com_$(component->name:)&task=$(task->name:)">$(task->showInMenuAs)</menu>
+      <menu link="option=com_$(component->name:)&task=$(task.name:)">$(task->showInMenuAs)</menu>
 .  endif
 .endfor
     </submenu>
@@ -185,7 +185,7 @@ require_once("components/com_$(component->name:)/includes/functions.php");
 // route incoming request to a function
 switch ($task) {
 .   for task
-    case '$(task->name:)': $(task->name:)(); break;
+    case '$(task.name:)': $(task.name:)(); break;
 .   endfor
     default: 
         JError:raiseError(404, JText::_('JGLOBAL_RESOURCE_NOT_FOUND'));
@@ -195,7 +195,7 @@ switch ($task) {
 /**
  * $(task->doc?"(no documentation)":)
  */
-function $(task->name:)() 
+function $(task.name:)() 
 {
     global $option, $mainframe;
 
@@ -212,9 +212,9 @@ function $(task->name:)()
 .   endfor
 
 .   # attempt to load a view
-.   if ("$(task->view?'':)" <> '' )
+.   if ("$(task->view.ref?'':)" <> '' )
 .     # ... yes, load it
-    include(JPATH_COMPONENT_ADMINISTRATOR."$(task->view:)");
+    include(JPATH_COMPONENT_ADMINISTRATOR."$(task->view.ref:)");
 .   else
 .     # ... no, call helper function
 .     # setup parameters
@@ -227,7 +227,7 @@ function $(task->name:)()
 .         param_str = "$(param_str) "
 .     endfor
 .
-    HTML_$(component->name:camel)Admin::$(task->name:)($(param_str));
+    HTML_$(component->name:camel)Admin::$(task.name:)($(param_str));
 .   endif
 }
 
@@ -249,7 +249,7 @@ class HTML_$(component->name:camel)Admin {
 .for admin
 .for task
 .   # only show this task if we don't have a view
-.   if ("$(task->view?'':)" = '' )
+.   if ("$(task->view.ref?'':)" = '' )
 .       # setup parameters
 .       param_str = " "
 .       for params
@@ -263,7 +263,7 @@ class HTML_$(component->name:camel)Admin {
     /**
      * $(task->doc?"(no documentation)":)
      */
-    function $(task->name:)($(param_str))
+    function $(task.name:)($(param_str))
     {
         global $mainframe;    
         $database =& JFactory::getDBO();
